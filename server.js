@@ -21,7 +21,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/deep-thoughts',
   useFindAndModify: false
 });
 
-//require(apiRoute)(app);
 require("./routes/htmlroutes")(app);
 require("./routes/apiroutes")(app);
 
