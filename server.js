@@ -1,7 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-require("./seeders/seed");
+//require("./seeders/seed"); //Seeds DB with data from seed.js
 
 const PORT = process.env.PORT || 8080;
 
@@ -13,22 +13,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect(
-    process.env.MONGODB_URI || 'mongodb://localhost/deep-thoughts',
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      useFindAndModify: false
-    },
-    console.log("Successfully connected to Mongo Database")
-  );
-
-mongoose.connection.on("error", err => {
-    console.log(`DB connection error: ${err.message}`);
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/deep-thoughts',
+{
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false
 });
 
+//require(apiRoute)(app);
 require("./routes/htmlroutes")(app);
 require("./routes/apiroutes")(app);
 
-app.listen(PORT, () => console.log("listening on port: ", PORT));
+app.listen(PORT, () => {
+  console.log(`App running on port ${PORT}!`);
+});
