@@ -1,12 +1,17 @@
 const express = require("express");
-const path = require("path");
+const logger = require("morgan");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const apiRoutes = require("./routes/apiroutes");
-const htmlRoutes = require("./routes/htmlroutes");
+require("./seeders/seed");
+
+const PORT = process.env.PORT || 8080;
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+
+app.use(logger("dev"));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static("public"));
 
 mongoose.connect(
     process.env.MONGODB_URI || 'mongodb://localhost/deep-thoughts',
@@ -15,18 +20,15 @@ mongoose.connect(
       useUnifiedTopology: true,
       useCreateIndex: true,
       useFindAndModify: false
-    }
+    },
+    console.log("Successfully connected to Mongo Database")
   );
 
 mongoose.connection.on("error", err => {
     console.log(`DB connection error: ${err.message}`);
 });
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.use(express.static("public"));
-
-app.use(apiRoutes);
-app.use(htmlRoutes);
+require("./routes/htmlroutes")(app);
+require("./routes/apiroutes")(app);
 
 app.listen(PORT, () => console.log("listening on port: ", PORT));

@@ -1,36 +1,43 @@
-const router = require("express").Router();
-const Workout = require("../models").Workout;
+const db = require("../models");
+
+module.exports = function(app) {
 
 //GET request grabs info to fill workout page
-router.get("/api/workouts", (req, res) => {
-    Workout.find().then(dbWorkout => {
-        res.json(dbWorkout);
-    }).catch(err => res.json(err))
-});
+    app.get("/api/workouts", (req, res) => {
+        db.Workout.find({}).then(dbWorkout => {
+            res.json(dbWorkout);
+        })
+        .catch(err => {
+            res.status(400).json(err);
+        });
+    })
 
 //GET request grabs info for range
-router.get("/api/workouts/range", ({}, res) => {
-    db.Workout.find({}).then((dbWorkout) => {
+    app.get("/api/workouts/range", ({}, res) => {
+      db.Workout.find({}).then((dbWorkout) => {
         res.json(dbWorkout);
-    }).catch(err => res.json(err))
-});
+      }).catch(err => {
+        res.status(400).json(err);
+      });
+    });
 
 //POST to add completed workouts to DB
-router.post("/api/workouts/", (req, res) => {
-    db.Workout.create(req.body).then((dbWorkout) => {
-        res.json(dbWorkout);
-    }).catch(err => res.json(err))
-});
+    app.post("/api/workouts/", (req, res) => {
+        db.Workout.create(req.body).then((dbWorkout) => {
+          res.json(dbWorkout);
+        }).catch(err => {
+            res.status(400).json(err);
+          });
+      });
 
 //Update exercise's by id value
-router.put("/api/workouts/:id", (req, res) => {
-    db.Workout.findByIdAndUpdate(
-        req.params.id,
-        { $push: {exercises: req.body } },
-        { new: true }
-    ).then((dbWorkout) => {
-        res.json(dbWorkout);
-    }).catch(err => res.json(err));
+    app.put("/api/workouts/:id", (req, res) => {
+        db.Workout.findByIdAndUpdate(
+          { _id: req.params.id }, { exercises: req.body }
+        ).then((dbWorkout) => {
+          res.json(dbWorkout);
+        }).catch(err => {
+          res.status(400).json(err);
         });
-
-module.exports = router;
+    });
+};
